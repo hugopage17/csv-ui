@@ -1,4 +1,4 @@
 node_modules
-./cdk/node_modules
-./csv-reader-ui/node_modules
-./types/node_modules
+/cdk/node_modules
+/csv-reader-ui/node_modules
+/types/node_modules
