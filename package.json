@@ -4,10 +4,17 @@
   "main": "index.js",
   "private": true,
   "workspaces": [
-    "csv-reader-ui", 
+    "csv-reader-ui",
     "cdk",
     "types",
     "packages/*"
- ],
-  "license": "MIT"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.16.0"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.26.1-alpha.32",
+    "@typescript-eslint/parser": "^5.26.0"
+  }
 }
