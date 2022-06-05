@@ -35,9 +35,21 @@ export interface CreateProjectResponse extends ResponseBase {
     }
 }
 
-export interface FetchProjectResponse extends ResponseBase {
+export interface FetchProjectsResponse extends ResponseBase {
     getProjects: {
         projects: Project[]
+    }
+}
+
+export interface FetchProjectResponse extends ResponseBase {
+    getProject: {
+        project: Project
+    }
+}
+
+export interface CreateUserResponse extends ResponseBase {
+    createUser: {
+        user: unknown
     }
 }
 

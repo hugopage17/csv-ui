@@ -6,8 +6,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
   },
   {
+    path: '/signup',
+    component: () => import('src/components/login/SignupComponent.vue'),
+  },
+  {
     path: '/login',
-    component: () => import('components/login/LoginComponent.vue'),
+    component: () => import('src/components/login/LoginComponent.vue'),
   },
   {
     path: '/:project',

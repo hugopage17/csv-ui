@@ -5,9 +5,10 @@
 
   export default defineComponent({
     name: 'DatasetsComponent',
-    emits: [ 'setXaxis' ],
+    emits: [ 'setXaxis', 'setGraphType' ],
     props: {
-        xAxis: { required: true, type: String }
+        xAxis: { required: true, type: String },
+        graphType: { required: true, type: String },
     },
     setup(props) {
         const projectStore = useProjectStore();
@@ -41,33 +42,40 @@
             dataKeys,
             yAxisKeys,
             enabledYAxisKeys,
-            xAxisKey: props.xAxis
+            xAxisKey: props.xAxis,
         };
     },
   })
 </script>
 
 <template>
-    <div>
-        <div>
-            <q-select
-                @update:model-value="$emit('setXaxis', $event)"
-                standout="bg-secondary text-white"
-                v-model="xAxisKey"
-                :options="yAxisKeys"
-                label="X Axis"
+    <div class="row items-center q-ma-sm">
+        <q-select
+            @update:model-value="$emit('setXaxis', $event)"
+            standout="bg-primary text-white"
+            v-model="xAxisKey"
+            :options="yAxisKeys"
+            label="X Axis"
+            style="width: 30%;"
+        />
+        <q-space/>
+        <q-card class="q-pa-sm row">
+            <q-btn-group class="q-mr-sm">
+                <q-btn @click="$emit('setGraphType', 'line')" :color="graphType === 'line' ? 'secondary' : 'primary'" icon="show_chart" title="Line Chart"/>
+                <q-btn @click="$emit('setGraphType', 'bar')" :color="graphType === 'bar' ? 'secondary' : 'primary'" icon="bar_chart" title="Bar Chart" />
+                <q-btn @click="$emit('setGraphType', 'pie')" :color="graphType === 'pie' ? 'secondary' : 'primary'" icon="pie_chart" title="Pie Chart" />
+            </q-btn-group>
+            <q-separator vertical />
+            <q-checkbox
+                v-for="yAxis in yAxisKeys"
+                :key="yAxis"
+                v-model="fileData[yAxis].enabled"
+                :val="yAxis"
+                :label="yAxis"
+                color="primary"
+                class="q-mr-sm"
             />
-        </div>
-        <div class="q-gutter-sm">
-                <q-checkbox
-                    v-for="yAxis in yAxisKeys"
-                    :key="yAxis"
-                    v-model="fileData[yAxis].enabled"
-                    :val="yAxis"
-                    :label="yAxis"
-                    color="primary"
-                />
-            </div>
+        </q-card>
     </div>
 </template>
 

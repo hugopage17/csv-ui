@@ -1,19 +1,23 @@
 <script lang="ts">
     import { defineComponent, toRefs, ref } from 'vue';
     import { useQuasar } from 'quasar';
-    import { Project } from '@csv-ui/types';
+    import { Project, HTTPMethods, FetchProjectsResponse } from '@csv-ui/types';
     import CreateProjectDialog from '../dialogs/projects/CreateProjectDialog.vue';
     import DeleteProjectDialog from '../dialogs/projects/DeleteProjectDialog.vue';
     import DefaultLayout from '../../layouts/DefaultLayout.vue';
     import ConsoleHeader from './ConsoleHeader.vue';
     import { useProjectStore } from '../../stores/project-store';
-    import ProjectThumbnail from '../project/ProjectThumbnail.vue'
+    import { useUserStore } from '../../stores/user-store';
+    import ProjectThumbnail from '../project/ProjectThumbnail.vue';
+    import apiClient from '../../api/apiClient';
 
     export default defineComponent({
         name: 'ConsoleComponent',
         components: { DefaultLayout, ConsoleHeader, ProjectThumbnail },
         setup() {
             const projectStore = useProjectStore()
+            const userStore = useUserStore()
+            const { user } = toRefs(userStore);
             const { projects, loadingProjects, selectedProject } = toRefs(projectStore)
             const selectedProjects = ref<Project[]>([])
 
@@ -31,7 +35,17 @@
                     componentProps: { 
                         projects: selectedProjects.value
                     }
-                });
+                }).onOk(() => {
+                    loadingProjects.value = true
+                    apiClient<FetchProjectsResponse>(`/project?uid=${user?.value?.uid}`, HTTPMethods.GET).then((res) => {
+                        loadingProjects.value = false
+                        console.log(res)
+                        projects.value = res.response.getProjects.projects;
+                    }).catch((err) => {
+                        console.log(err);
+                        loadingProjects.value = false
+                    })
+                })
             }
 
             const deleteSingle = (project: Project) => {
@@ -60,7 +74,7 @@
                 if (val) {
                     selectedProjects.value.push(project)
                 } else {
-                    selectedProjects.value.filter(({ id }) => id !== project.id);
+                    selectedProjects.value.filter(({ id }) => id !== project.id)
                 }
             }
 
@@ -82,7 +96,7 @@
 
 
 <template>
-    <DefaultLayout> 
+    <DefaultLayout :sidebar="true"> 
         <template v-slot:listIcons>
             <q-list>
                 <q-item
@@ -104,7 +118,10 @@
         </template>
         <div>
             <div>
-                <ConsoleHeader @openDeleteDialog="openDeleteProjectDialog" :selectedProjects="selectedProjects"/>
+                <ConsoleHeader
+                    @openDeleteDialog="openDeleteProjectDialog"
+                    :selectedProjects="selectedProjects"
+                />
             </div>
 
             <div v-if="loading" class="fixed-center">
@@ -117,7 +134,7 @@
                     <div class="text-h5">Create your first project</div>
                 </q-card-section>
 
-                <q-card-actions align="center">
+                <q-card-actions align="center" style="width: 100%">
                     <q-btn label="Get Started" color="primary" @click="openCreateProjectDialog"/>
                 </q-card-actions>
             </q-card>

@@ -1,64 +1,45 @@
 <template>
-<div style="height: 60vh;">
-    <Line
-        :chart-data="graphData"
-        :chart-options="chartOptions"
+<q-card class="q-ma-md" style="height: 60vh;">
+    <LineGraph
+        :xAxis="xAxis"
+        :selectedProject="selectedProject"
+        :colors="colors"
+        v-if="graphType === 'line'"
     />
-</div>
+    <BarGraph 
+        :xAxis="xAxis"
+        :selectedProject="selectedProject"
+        :colors="colors"
+        v-else-if="graphType === 'bar'"
+    />
+</q-card>
     
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs, computed } from 'vue'
-import { DataObject, FileData } from '@csv-ui/types';
-import { Line } from 'vue-chartjs'
+import { defineComponent, toRefs, ref } from 'vue'
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js'
 import { useProjectStore } from '../../../stores/project-store';
+import LineGraph from './graphs/LineGraph.vue';
+import BarGraph from './graphs/BarGraph.vue';
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
 
 export default defineComponent({
   name: 'GraphComponent',
-  components: { Line },
+  components: { LineGraph, BarGraph },
   props: {
-        xAxis: { required: true, type: String }
+        xAxis: { required: true, type: String },
+        graphType: { required: true, type: String }
     },
-  setup(props) {
+  setup() {
     const projectStore = useProjectStore();
     const { selectedProject } = toRefs(projectStore)
-    const fileData = selectedProject?.value?.fileData as FileData;
-    const colors = ['#64ffda', '#26A69A', '#64E8FF'];
 
-    const datasets = computed(() => {
-        return Object.entries(fileData)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            .filter(([label, dataObj]) => label !== props.xAxis)
-            .map(([label, dataObj]: [string, DataObject | undefined], idx: number) => {
-                if(dataObj?.enabled && label !== props.xAxis) {
-                    return {
-                        label,
-                        data: dataObj.content,
-                        backgroundColor: colors[idx],
-                        borderColor: colors[idx],
-                        borderWidth: 1,
-                        pointRadius: 1,
-                    };
-                }
-        }).filter(Boolean);
-    });
-
-    const graphData = computed(() => {
-        return {
-            labels: fileData[props.xAxis]?.content.filter((item: string) => item !== '') ?? [],
-            datasets: datasets.value,
-        };
-    })
+    const colors = ['#07FFC4', '#04b58b', '#64E8FF'];
     return {
-        graphData,
-        chartOptions: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
+        selectedProject,
+        colors
     }
   }
 })

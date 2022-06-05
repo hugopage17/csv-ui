@@ -1,4 +1,4 @@
-import type { FileData, Project } from '@csv-ui/types';
+import type { FileData } from '@csv-ui/types';
 
 type RowData = {
     [key: string]: string | number;

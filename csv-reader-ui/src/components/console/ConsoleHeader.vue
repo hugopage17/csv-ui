@@ -31,26 +31,26 @@
 <template>
     <div class="q-pa-md">
         <div class="row items-center q-mb-sm">
-            <div class="text-h6">Overview</div>
+            <div class="text-h6">My Projects</div>
             <q-space/>
-            <div>
-                <q-btn
-                    title="Create Project"
-                    icon="add"
-                    color="primary"
-                    @click="openCreateProjectDialog"
-                    round
-                    class="q-mr-sm"
-                />
-                <q-btn
-                    :title="`Delete ${selectedProjects.length} selected projects`"
-                    icon="delete"
-                    color="primary"
-                    round
-                    @click="$emit('openDeleteDialog')"
-                    class="q-mr-sm"
-                />
-            </div>
+            <q-btn
+                title="Create Project"
+                icon="add"
+                color="accent"
+                flat
+                label="Create"
+                @click="openCreateProjectDialog"
+            />
+            <q-separator vertical />
+            <q-btn
+                :title="`Delete ${selectedProjects.length} selected projects`"
+                icon="delete"
+                color="accent"
+                label="Delete"
+                flat
+                :disabled="selectedProjects.length === 0"
+                @click="$emit('openDeleteDialog')"
+            />
         </div>
         <q-separator/>
     </div>

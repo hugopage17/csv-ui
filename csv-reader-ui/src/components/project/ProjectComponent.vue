@@ -32,19 +32,19 @@
               </q-input>
             </div>
             <q-space/>
-            <q-btn-group>
-              <q-btn color="primary" icon="edit" title="Rename Project" @click="editMode = true" />
-              <q-btn color="primary" icon="download" title="Export to CSV" />
-              <q-btn color="primary" icon="delete" title="Delete Project" @click="openDeleteProjectDialog"/>
+            <q-btn-group v-if="user">
+              <q-btn color="accent" icon="edit" title="Rename Project" @click="editMode = true" />
+              <q-btn color="accent" icon="download" title="Export to CSV" />
+              <q-btn color="accent" icon="delete" title="Delete Project" @click="openDeleteProjectDialog"/>
             </q-btn-group>
           </div>
           <q-separator />
-        <div class="q-ma-sm">
-          <q-card class="q-pa-sm row justify-between" style="height: 60vh;" v-if="selectedSec === 'graph'">
-            <DatasetsComponent class="col" :xAxis="xAxis" @setXaxis="setXaxis"/>
-            <q-separator />
-            <GraphComponent class="col" :xAxis="xAxis" v-if="xAxis"/>
-          </q-card>
+          <div class="q-ma-sm">
+            <div v-if="selectedSec === 'graph'">
+              <DatasetsComponent @setGraphType="setGraphType" :graphType="graphType" class="col" :xAxis="xAxis" @setXaxis="setXaxis"/>
+              <GraphComponent :graphType="graphType" class="col" :xAxis="xAxis" v-if="xAxis"/>
+            </div>
+          
 
           <q-card style="height: 60vh;" v-else-if="selectedSec === 'table'">
             <TableComponent />
@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from 'vue'
+import { defineComponent, PropType, ref, toRefs } from 'vue'
 import { Project } from '@csv-ui/types';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
@@ -64,6 +64,7 @@ import { api } from '../../boot/axios';
 import DatasetsComponent from './dashboard/DatasetsComponent.vue'
 import GraphComponent from './dashboard/GraphComponent.vue'
 import DeleteProjectDialog from '../dialogs/projects/DeleteProjectDialog.vue'
+import { useUserStore } from '../../stores/user-store';
 
 export default defineComponent({
   name: 'ProjectComponent',
@@ -78,6 +79,12 @@ export default defineComponent({
     const editMode = ref<boolean>(false);
     const makingEdit = ref<boolean>(false);
     const projectName = ref(props.project.projectName);
+
+    const graphType = ref<string>('line');
+    const setGraphType = (type: string) => graphType.value = type
+
+    const userStore = useUserStore();
+    const { user } = toRefs(userStore);
 
     const quasar = useQuasar()
     const openDeleteProjectDialog = () => {
@@ -125,7 +132,10 @@ export default defineComponent({
       editMode,
       projectName,
       updateProject,
-      makingEdit
+      makingEdit,
+      graphType,
+      setGraphType,
+      user
     }
   }
 })
