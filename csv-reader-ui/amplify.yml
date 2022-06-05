@@ -12,20 +12,18 @@ frontend:
   phases:
     preBuild:
       commands:
-        - cd csv-reader-ui
         - yarn
     build:
       commands:
-        - cd csv-reader-ui
         - echo "I am running 🏃 on prod" 
         - yarn quasar build
   artifacts:
-    baseDirectory: csv-reader-ui/dist/spa
+    baseDirectory: dist/spa
     files:
       - '**/*'
   cache:
     paths:
-      - csv-reader-ui/node_modules/**/*git
+      - node_modules/**/*git
   customHeaders:
     - pattern: '**/*'
       headers:
