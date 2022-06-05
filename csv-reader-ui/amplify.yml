@@ -1,4 +1,13 @@
 version: 1
+backend:
+  phases:
+    preBuild:
+      commands:
+        - 'npm install -g typescript'
+    build:
+      commands:
+        - '# Execute Amplify CLI with the helper script'
+        - amplifyPush --simple
 frontend:
   phases:
     preBuild:
@@ -9,7 +18,7 @@ frontend:
         - echo "I am running 🏃 on prod" 
         - yarn quasar build
   artifacts:
-    baseDirectory: dist
+    baseDirectory: dist/spa
     files:
       - '**/*'
   cache:
